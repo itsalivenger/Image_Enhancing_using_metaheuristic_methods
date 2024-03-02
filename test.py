@@ -31,7 +31,7 @@ newImg[..., 0] = convR
 newImg[..., 1] = convG
 newImg[..., 2] = convB
 
-# newImg = np.dstack((convR, convG, convB))
+newImg = np.dstack((convR, convG, convB))
 
 # for channelNum in range(0, img.shape[2]):
 #     newImg[..., channelNum] = fc.convolutionProduct(img[..., channelNum]

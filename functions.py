@@ -21,7 +21,7 @@ def convolutionProduct(imgMatrix, kernel):
 
 def getPxl(matrix, i, j):
     if(i < 0 or j < 0 or i > len(matrix) - 1 or j > len(matrix[0]) - 1):
-        return 0
+        return .5
     return matrix[i][j]
 
 def matrix1To1Product(matrix1, matrix2):
@@ -55,14 +55,6 @@ def normalize(imgMatrix, imgMax, imgMin):
   return imgMatrix
 
 def denormalize(imgMatrix, imgMax, imgMin):
-    imgMatrix *= imgMax
-    imgMatrix += imgMin
+    imgMatrix = imgMatrix * imgMax
+    imgMatrix = imgMatrix + imgMin
     return imgMatrix - 1
-
-def createKernel(n):
-    kernel = []
-    for i in range(0, n):
-        kernel.append([])
-        for j in range(0, n):
-            kernel[i].append(1 * (1 / n))
-    return kernel
