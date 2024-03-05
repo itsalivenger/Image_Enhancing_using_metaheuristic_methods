@@ -1,18 +1,19 @@
 import cv2
 import numpy as np
+import kernels as ks
 
 def apply_convolution(img:np.array, kernel:np.array):
     
-    # Get the height, width, and number of channels of the image
-    height,width,c =img.shape[0],img.shape[1],img.shape[2]
+    # Get the height, width
+    height, width =img.shape[0], img.shape[1]
     
-    # Get the height, width, and number of channels of the kernel
+    # Get the height, width
     kernel_height,kernel_width = kernel.shape[0],kernel.shape[1]
     
     # Create a new image of original img size minus the border 
     # where the convolution can't be applied
     new_img = np.zeros((height-kernel_height+1,width-kernel_width+1,3)) 
-    
+
     # Loop through each pixel in the image
     # But skip the outer edges of the image
     for i in range(kernel_height//2, height-kernel_height//2-1):
@@ -30,7 +31,8 @@ def apply_convolution(img:np.array, kernel:np.array):
     return new_img.astype(np.uint8)
 
 # kernel for edge detection
-kernel = np.array([[-1,-1,-1], [-1,8,-1], [-1,-1,-1]])
+# kernel = np.array([[-1,-1,-1], [-1,8,-1], [-1,-1,-1]])
+kernel = np.array(ks.anotherTestKernel)
 
 # kernel for vertical edge detection
 #kernel = np.array([[-1,0,1],[-1,0,1],[-1,0,1]])
@@ -43,7 +45,7 @@ kernel = np.array([[-1,-1,-1], [-1,8,-1], [-1,-1,-1]])
 
 # Open the image and convert it to an array
 # Try to put your own picture!
-img = cv2.imread('./cat.webp')
+img = cv2.imread('./HappyFish.jpg')
 or_img = np.asarray(img)
 
 new_img = apply_convolution(or_img, kernel)

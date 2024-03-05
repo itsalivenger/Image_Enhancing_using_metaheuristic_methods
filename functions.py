@@ -1,38 +1,17 @@
 import numpy as np
 
-def convolutionProduct(imgMatrix, kernel):
-    # kernelSum = getMatrixSum(kernel)
-    # if(kernelSum != 1): 
-    #     print("Kernel is not compatible, it needs to be normalized!")
-    #     exit(0)
+def convolution2D(imgMatrix, kernel):
+    img = np.array(imgMatrix)
+    kHeight, kWidth = kernel.shape[0], kernel.shape[1]
+    convoledImg = np.zeros((img.shape[0], img.shape[1]))
+
+    for i in range(kHeight // 2, img.shape[0] - kHeight // 2 - 1):
+        for j in range(kWidth // 2, img.shape[1] - kWidth // 2 - 1):
+                window = img[i - kHeight // 2 : i + kHeight // 2 + 1, j - kWidth // 2: j + kWidth // 2 + 1]
+                convoledImg[i, j] = int(getMatrixSum(window * kernel))
     
-    currentSubMatrix = []
-    finalImage = []
-    for i in range(0, len(imgMatrix)):
-        finalImage.append([])
-        for j in range(0, len(imgMatrix[i])):
-            currentSubMatrix.append([getPxl(imgMatrix, i - 1, j - 1), getPxl(imgMatrix, i - 1, j), getPxl(imgMatrix, i - 1, j + 1)])
-            currentSubMatrix.append([getPxl(imgMatrix, i, j - 1), getPxl(imgMatrix, i, j), getPxl(imgMatrix, i, j + 1)])
-            currentSubMatrix.append([getPxl(imgMatrix, i + 1, j - 1), getPxl(imgMatrix, i + 1, j), getPxl(imgMatrix, i + 1, j + 1)])
-            pixelValue = getMatrixSum(matrix1To1Product(currentSubMatrix, kernel))
-            finalImage[i].append(pixelValue)
-            currentSubMatrix = []
-    return finalImage
-
-def getPxl(matrix, i, j):
-    if(i < 0 or j < 0 or i > len(matrix) - 1 or j > len(matrix[0]) - 1):
-        return .5
-    return matrix[i][j]
-
-def matrix1To1Product(matrix1, matrix2):
-    result = []
-    for i in range(0, len(matrix1)):
-        temp = []
-        for j in range(0, len(matrix1[i])):
-            temp.append(matrix1[i][j] * matrix2[i][j])
-        result.append(temp)
-    return result
-
+    convoledImg = np.clip(convoledImg, 0, 255)
+    return convoledImg.astype(np.uint8)
 
 def getMatrixSum(matrix):
     sum = 0
@@ -40,14 +19,6 @@ def getMatrixSum(matrix):
         for j in range(0, len(matrix[i])):
             sum += matrix[i][j]
     return sum
-
-def scalarMatrixMultiply(scalar, matrix):
-    result = []
-    for i in range(0, len(matrix)):
-        result.append([])
-        for j in range(0, len(matrix[0])):
-            result[i].append(scalar * matrix[i][j])
-    return result
 
 def normalize(imgMatrix, imgMax, imgMin):
   imgMatrix = imgMatrix + 1 - imgMin
