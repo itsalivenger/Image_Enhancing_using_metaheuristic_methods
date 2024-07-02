@@ -1,90 +1,52 @@
 import numpy as np
-# from metaheuristics.costFct import INTERVAL
-# from plotting import Plot_Particles
-
-
-PARTICLE_COUNT = 100
-MAX_ITER = 100
-
-def printParticles(flock):
-    for i in range(len(flock)):
-        print(flock[i].position)
-
 
 class Particle:
-    def __init__(self, step, func):
-        self.position = []
-        self.best = []
-        self.step = step
+    def __init__(self, dimensions, func, w=0.5, c1=1, c2=2):
+        self.position = np.random.rand(dimensions)
+        self.velocity = np.random.rand(dimensions) * 0.1  # Small initial velocity
+        self.best_position = np.copy(self.position)
+        self.best_value = float('inf')
         self.func = func
-    
-    def initialize(self, interval):
-        for i in range(len(interval)):
-            self.position.append(interval[i][0] + np.random.rand() * (interval[i][1] - interval[i][0]))
-            self.best = self.position[:]
+        self.w = w 
+        self.c1 = c1 
+        self.c2 = c2 
 
-    def move(self, best):
-        for i in range(len(self.position)):
-            self.position[i] += self.step * (-1 if self.position[i] <= 0 else 1) 
-        self.evaluate()
+    def update_velocity(self, global_best):
+        inertia = self.w * self.velocity
+        cognitive = self.c1 * np.random.rand(len(self.position)) * (self.best_position - self.position)
+        social = self.c2 * np.random.rand(len(self.position)) * (global_best - self.position)
+        self.velocity = inertia + cognitive + social
+
+    def update_position(self, bounds):
+        self.position += self.velocity
+        self.position = np.clip(self.position, bounds[:, 0], bounds[:, 1])
         
-        for i in range(len(self.best)):
-            self.position[i] += self.step * (-1 if self.position[i] > self.best[i] else 1) 
-        self.evaluate()
-            
-        for i in range(len(best)):
-            self.position[i] += self.step * (-1 if self.position[i] > best[i] else 1) 
-        self.evaluate()
+        current_value = self.func(self.position)
+        if current_value < self.best_value:
+            self.best_value = current_value
+            self.best_position = np.copy(self.position)
 
-    def evaluate(self):
-        if self.func(self.position) < self.func(self.best):
-            self.best = self.position[:]
+def PSO(n_particles, dimensions, bounds, max_iter, func):
+    particles = [Particle(dimensions, func) for _ in range(n_particles)]
+    global_best_position = np.random.rand(dimensions)
+    global_best_value = float('inf')
     
-    def keepInInterval(self, interval):
-        for i in range(len(interval)):
-            if(self.position[i] > interval[i][1]):
-                self.position[i] = interval[i][1]
-            
-            if(self.position[i] < interval[i][0]):
-                self.position[i] = interval[i][0]
-
-
-
-
-def PSO(n, step, interval, MAX_ITER, func):
-    flock = []
-    TeamBest = []
-    for i in range(len(interval)):
-        TeamBest.append((interval[i][0] + interval[i][1]) / 2)
-    # initalization
-    for i in range(n):
-        particle = Particle(step, func)
-        particle.initialize(interval)
-        if(func(particle.position) < func(TeamBest)):
-            TeamBest = particle.position[:]
-        flock.append(particle)
-
-        
-
+    for _ in range(max_iter):
+        for particle in particles:
+            particle.update_velocity(global_best_position)
+            particle.update_position(bounds)
+            if particle.best_value < global_best_value:
+                global_best_value = particle.best_value
+                global_best_position = np.copy(particle.best_position)
     
-    
-    for i in range(MAX_ITER):
-        for j in range(len(flock)):
-            flock[j].move(TeamBest)
-            flock[j].keepInInterval(interval)
-            if(func(flock[j].position) < func(TeamBest)):
-                TeamBest = flock[j].position[:]
+    return global_best_position, global_best_value
 
-    return (flock, TeamBest)
+# bounds = np.array([[0, 2], [0, 2], [0, 2], [0, 2]])
+# dimensions = bounds.shape[0]
 
-# a, bestSol = PSO(PARTICLE_COUNT, .1, INTERVAL, MAX_ITER)
-# print("final result")
-# printParticles(a)
+# def example_function(x):
+#     return np.sum(x**2) 
 
-# b = []
-# for i in range(len(a)):
-#     b.append(a[i].position)
-
-# printParticles(a)
-# print(func(bestSol), bestSol)
-# Plot_Particles(func, b)
+# best_position, best_value = PSO(20, dimensions, bounds, 100, example_function)
+# print(f"Best position: {best_position}")
+# print(f"Best value: {best_value}")

@@ -1,0 +1,75 @@
+andeposi endk hada:
+1-Good morning Everyone. My name is Ali Ait Houssa and today we will be discussing the Hybridization of the divide and conquer method 
+and metaheuristic algorithms for better contrast enhancement in medical images.My thanks pour mon encadrant pour son soutien et son encouragement et aux membres de jury without further ado let's begin.
+
+2-We're starting with a general introduction answering some questions such as:
+What's a digital image ? How does a convolutional product work ? what does it mean to enhance an image ? and how can we measure it ?
+What are divide and conquer and metaheursitics and how can we use them to enhance images ? and lastely we will be seeing some of the results.
+
+3- there are two types of images: grayscale and RGB. Grayscale images are represented as a 2D matrix where each element corresponds to a pixel's
+intensity value ranging from 0 (for black) to 255 (for white). it is a simple and yet effective way to represent an image for processing.
+
+4-RGB images on the other hand. are represented as 3D matrices. each pixel in these images is composed of three values corresponding to red,
+green and blue channels. their combination determines the final color of each pixel.
+
+5-For convolution in mathematiques. It is a mathematical operation that takes 2 functions and outputs a third one. where we take the second 
+function and slide it accross the first one while multiplying each value with its corresponding one. and finally suming them up to get the final
+value for that point. Here are some examples above:
+
+6-In the context of image processing this operation is used to apply (kernels or filters)that are small matrices typically of size 3x3 or 5x5
+(here are some examples of kernels), where we apply them to an image to enhance its features or extract informations. When applying it, we 
+slide the kernel over the image and for each position we compute the sum of the product of the kernel and the corresponding image pixel values.
+this operation helps in various tasks such as edge detection and image sharpening. here are some examples of the effect of some kernels.
+
+7-this slide demonstrates the process of applying a convolution product to an image.
+
+8-the goal of image enhancement is to improve the visual quality of an image, making it easier to analyse which sums up to contrast and brightness
+adjustments, sharpening and noise reduction. one measure we use to assess enhancement is the EME function that stands for Effective measure of 
+enhancement. Higher EME value indicates better enhancement. the eme function breaks down the image into blocks and then calculating the maximum,
+minimum of each block and using them in the formula.
+
+9-The divide and conquer strategy is a problem solving approach that consists of diving it into smaller sub problems. Solving them and then 
+combining them to form a solution for the original problem.
+
+10-An example of divide and conquer is the sort and merge algorithm that takes an array and divides it into smaller arrays and sorting them up
+and finally merging them to form a sorted array.
+
+11- for our problem we are we are going to decompose the image into high and low frequency components. that could be visualised as it follows.
+
+12-we can get each of them by convoling the original image with the following kernels. so we can process them seperately. once the decomposition
+is obtained we construct an image V by a random linear combination of those images.and then we thrive to find the best weights that makes the linear 
+combination an enhanced image. In other words to have higher EME value for the resulted image. For this we are going to use metaheuristics.
+
+13-Metaheuristics are strategies designed to solve optimisation problems. where we thrive to find local or global optimum of a function.Some
+popular examples are genetic algorithms, ant colony and PSO that are population based. while simulated annealing is a single solution method.
+
+14-in this project we are using GSA, FPA, SCA and PSO
+
+15- lets talk first about the GSA which is inspired by the laws of gravity. In GSA solution candidates are considered as objects with masses.
+and their performance is measured by their masses, the fitter they are or rather the closer they are to an optimum the heavier they get and
+they attract other candidates to them which leads to better space exploration.
+
+16-presenti flowchart
+
+17-FPA is inspired by natural pollination process of flowers. It simulates the transfer of pollen from one flower to another which helps in
+finding optimum solutions. 
+
+18-presenti flowchart dyal FPA
+
+19-SCA is a mathematical model that uses sine and cosine functions to update the position of solutions in the search space. this method balances
+exploration and exploitation through randomizzed adjustements.
+
+20-werri flowchart dyal SCA
+
+21-PSO is inspired by the behavior of birds flocking. In pso particles move based on their experience and their neighboors experience.
+
+22-werri flowchart t PSO
+
+23-For this project we've used Python and some python libraries such as Numpy as usual for computation and OpenCv for image processing.
+
+24-werri results.
+
+25-we conclude that the combination of divide and conquer and metaheuristics is highly effective for image enhancement. metaheuristics could perform 
+better if parameters are well set.
+
+26-thank you for your attention and i am open to any question you may have.

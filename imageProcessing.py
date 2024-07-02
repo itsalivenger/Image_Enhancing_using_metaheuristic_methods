@@ -4,35 +4,54 @@ import kernels as ks
 import numpy as np
 import matplotlib.pyplot as plt
 from metaheuristics.PSO import PSO 
+from metaheuristics.SineCosAlg import sineCosAlg 
+from metaheuristics.FPA import FPA
+from metaheuristics.GSA import GSA
+import pydicom
 
-img = cv2.imread("cameraBruit.png", cv2.IMREAD_GRAYSCALE)
-# img = cv2.imread("cat.webp")
+
+directory = "xray2.jpeg"
+# dicom_data = pydicom.dcmread(directory)
+# img = dicom_data.pixel_array
+img = cv2.imread(directory, cv2.IMREAD_GRAYSCALE)
 
 n = 4
+m = 4
 img = fc.normalize(img)
-# imgRes = fc.convolution2D(img, np.array(ks.emboss))
-u1= cv2.filter2D(img, -1, np.array(ks.h1))
-u2= cv2.filter2D(img, -1, np.array(ks.h2))
-u3= cv2.filter2D(img, -1, np.array(ks.h3))
-u4= cv2.filter2D(img, -1, np.array(ks.h4))
+# img = fc.Fitzugh_Nagumo(img)
+
+u1= cv2.filter2D(img, -1, ks.H1)
+u2= cv2.filter2D(img, -1, ks.H2)
+u3= cv2.filter2D(img, -1, ks.h3)
+u4= cv2.filter2D(img, -1, ks.h4)
 
 def Opt(W):
-    w1 = W[0]
-    w2 =W[1]
-    w3 = W[2]
-    w4 = W[3]
-
+    w1, w2, w3, w4 = W
     v = (u1 * w1 + u2 * w2 + u3 * w3 + u4 * w4)
-    v = fc.Fitzugh_Nagumo(v)
-
-    emeVal = 1 / (1 + fc.EME(v, n) ** 2)
+    emeVal = 1 / (1 + np.power(fc.EME(v, n, m), 2))
     return emeVal
 
-flock, teamBest = PSO(40, .05, [[0, 1], [0, 1], [0, 1], [0, 1]], 40, Opt)
+bounds = np.array([[0, 1], [0, 1], [0, 1], [0, 1]])
+dimensions = bounds.shape[0]
 
-print(teamBest)
-imgRes = (u1 * teamBest[0] + u2 * teamBest[1] + u3 * teamBest[2] + u4 * teamBest[3]) 
+# BestPosition, best_value = PSO(100, dimensions, bounds, 100, Opt)
+# BestPosition, agents = sineCosAlg(200, 300, bounds, 2, Opt)
+# BestPosition, flowers = FPA(40, .1, 1.5, bounds, 150, .8, .01, Opt)
+BestPosition, worstPlanet = GSA(100, .5, .5, bounds, 100, 2, Opt)
 
-plt.subplot(122),plt.title("Before:"), plt.imshow(img, cmap = 'gray')
-plt.subplot(121),plt.title("After:"), plt.imshow(imgRes, cmap = 'gray')
+
+print(BestPosition)
+imgRes = (u1 * BestPosition[0] + u2 * BestPosition[1] + u3 * BestPosition[2] + u4 * BestPosition[3])
+
+# imgRes = 0.0895177 * u1 + 0.01842585 * u2 + 0.20577308 * u3 + 0.9434533 * u4
+
+emeBefore = fc.EME(img, n, m)
+emeAfter = fc.EME(imgRes, n, m)
+
+
+print(f"PSO: Optimized weights: {BestPosition}, EME after: {emeAfter}, EME before: {emeBefore}")
+
+
+plt.subplot(121), plt.title(f"Before EME({n},{m}) = {emeBefore}:"), plt.imshow(img, cmap='gray')
+plt.subplot(122), plt.title(f"after EME({n},{m}) = {emeAfter}:"), plt.imshow(imgRes, cmap='gray')
 plt.show()

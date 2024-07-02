@@ -6,6 +6,11 @@ tests/
 PFE 2/
 image_*.png
 cameraBruit.png
+*.png
+*.dcm
+*.jpg
+*.jpeg
+.zip
 
 
 # C extensions

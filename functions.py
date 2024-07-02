@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import cv2
+
 
 def convolution2D(imgMatrix, kernel):
     img = np.array(imgMatrix)
@@ -33,33 +34,58 @@ def denormalize(imgMatrix, imgMax, imgMin):
     return imgMatrix - 1
 
 
-def EME(image, n):
-    imgH, imgW = image.shape
-
-    blocksX = imgW // n
-    blocksY = imgH // n
-
-    EMESum = 0
-    for i in range(n):
-        for j in range(n):
-            block = image[i * blocksX:(i + 1) * blocksX, j * blocksY:(j + 1) * blocksY]
-            # print(block, "/newline")
-            blockMin = np.min(block)
-            blockMax = np.max(block)
-
-            if(blockMin > 0):
-                EMESum += 20 * np.log(blockMax / blockMin)
+def EME(image, n, m):
+    # print(image.shape)
+    h, w = image.shape
+    eme = 0
+    k1 = h // n
+    k2 = w // m
     
-    EMESum /= blocksX * blocksY
-    return EMESum
+    for i in range(n):
+        for j in range(m):
+            block = image[i * k1:(i + 1) * k1, j * k2:(j + 1) * k2]
+            max_val = np.max(block)
+            min_val = np.min(block)
+            if min_val > 0:
+                eme += np.log(max_val / min_val)
+    
+    return eme * (20 / (n * m))
 
 def Fitzugh_Nagumo(img):
     b = 1; a = .5; tau = 1e-3; dt = 1e-3
-    I = img.astype(np.float64) / 255.0
 
-    u = I
+    u = img
     v = 0
     for i in range(5):
         u = (dt / tau) * (u * (u - a) * (1 - u) - v)
         v = v + (dt) * (u - b * v)
     return u
+
+def PSNR(original, enhanced):
+    mse = np.mean((original - enhanced) ** 2)
+    if mse == 0:
+        return float('inf')
+    pixel_max = 1.0
+    return 20 * np.log10(pixel_max / np.sqrt(mse))
+
+import numpy as np
+
+def CNR(image):
+    # Calculate mean pixel intensity
+    mean_intensity = np.mean(image)
+    
+    # Calculate standard deviation of pixel intensity
+    std_intensity = np.std(image)
+    
+    # Calculate CNR
+    cnr = mean_intensity / std_intensity
+    
+    return cnr
+
+
+def gradient_magnitude(image):
+    grad_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+    grad_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+    grad_magnitude = np.sqrt(grad_x ** 2 + grad_y ** 2)
+    return np.mean(grad_magnitude)
+
